@@ -1,0 +1,14 @@
+{
+    "name": "Inventory",
+    "version": "1.0.0",
+    "description": "Track items stored in boxes.",
+    "main": "app.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/joelvardy/inventory"
+    },
+    "dependencies": {
+        "body-parser": "^1.13.2",
+        "express": "^4.13.1"
+    }
+}
