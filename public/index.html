@@ -3,15 +3,36 @@
     <head>
         <title>Inventory</title>
         <link rel="stylesheet" href="css/app.css">
-        <script src="js/app.js"></script>
     </head>
-    <body>
+    <body id="inventory-app">
 
-        <div class="boxes"></div>
+        <h1>Inventory</h1>
 
-        <button class="reload" type="button">Reload</button>
-        <button class="save" type="button">Save</button>
-        <button class="new-box" type="button">New Box</button>
+        <div class="boxes">
 
+            <div class="box" v-repeat="box: boxes">
+
+                <input class="box-name" v-model="box.name">
+
+                <button v-on="click: deleteBox(box)">Delete Box</button>
+                <button v-on="click: createBoxItem(box)">Create Box Item</button>
+
+                <div class="box-contents">
+                    <div class="box-item" v-repeat="boxItem: box.contents">
+                        <input class="box-item-name" v-model="boxItem.name">
+                        <button v-on="click: deleteBoxItem(box, boxItem)">Delete Box Item</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <button v-on="click: createBox()">Create Box</button>
+        <button v-on="click: save()">Save Data</button>
+
+        <script src="js/vendor/vue.min.js"></script>
+        <script src="js/data.js"></script>
+        <script src="js/app.js"></script>
     </body>
 </html>

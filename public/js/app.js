@@ -1,115 +1,66 @@
-document.addEventListener('DOMContentLoaded', function () {
+(function (exports) {
 
-    // Add Box Item
-    var addBoxItem = function (item, boxElement) {
+    'use strict';
 
-        var boxItemElement = document.createElement('div');
-        boxItemElement.classList.add('item');
-        boxItemElement.innerHTML = '<input name="box-item" value="' + item.name + '"><button class="delete-item" type="button">Delete Item</button>';
-        boxItemElement.querySelector('button.delete-item').addEventListener('click', function (event) {
-            event.target.parentNode.parentNode.removeChild(event.target.parentNode);
-        });
-        boxElement.appendChild(boxItemElement);
+    exports.app = new Vue({
 
-    };
+        // The root element that will be compiled
+        el: '#inventory-app',
 
-    // Add Box
-    var addBox = function (box) {
+        // App state data
+        data: {
+            boxes: []
+        },
 
-        var boxElement = document.createElement('div');
-        boxElement.classList.add('box');
-        boxElement.innerHTML = '<input name="box-name" value="' + box.name + '"><button class="delete-box" type="button">Delete Box</button><button class="new-item" type="button">New Item</button><div class="contents"></div>';
-        boxElement.querySelector('button.delete-box').addEventListener('click', function (event) {
-            event.target.parentNode.parentNode.removeChild(event.target.parentNode);
-        });
-        boxElement.querySelector('button.new-item').addEventListener('click', function (event) {
-            addBoxItem({
-                name: ''
-            }, event.target.parentNode);
-        });
-        for (var j in box.contents) {
-            addBoxItem(box.contents[j], boxElement.querySelector('div.contents'));
-        }
-        document.querySelector('div.boxes').appendChild(boxElement);
+        // Ensure data persistence
+        ready: function () {
 
-    };
+            var _this = this;
 
-    // Load boxes
-    var loadBoxes = function () {
+            inventoryData.fetch(function (responseJson) {
 
-        document.querySelector('div.boxes').innerHTML = '';
+                _this.boxes = responseJson.boxes;
 
-        fetch('/boxes', {
-            method: 'get'
-        }).then(function (response) {
-            return response.json();
-        }).then(function (responseJson) {
+                _this.$watch('boxes', function (boxes) {
+                    inventoryData.save(boxes);
+                }, true);
 
-            console.log('Loaded boxes', responseJson.status);
-
-            for (var i in responseJson.boxes) {
-                addBox(responseJson.boxes[i]);
-            }
-
-        });
-
-    };
-
-    // Save boxes
-    var saveBoxes = function () {
-
-        var boxes = [];
-
-        [].forEach.call(document.querySelectorAll('div.boxes div.box'), function (boxElement) {
-
-            var box = {
-                name: '',
-                contents: []
-            };
-
-            box.name = boxElement.querySelector('input[name=box-name]').value;
-
-            [].forEach.call(boxElement.querySelectorAll('div.contents input[name=box-item]'), function (boxItemElement) {
-                box.contents.push({
-                    name: boxItemElement.value
-                });
             });
 
-            boxes.push(box);
+        },
 
-        });
+        // Methods that implement data logic.
+        methods: {
 
-        fetch('/boxes', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
+            createBox: function () {
+                this.boxes.push({
+                    name: '',
+                    contents: []
+                });
             },
-            body: JSON.stringify(boxes)
-        }).then(function (response) {
-            return response.json();
-        }).then(function (responseJson) {
 
-            console.log('Saved boxes', responseJson.status);
+            deleteBox: function (box) {
+                this.boxes.$remove(box);
+            },
 
-        });
+            createBoxItem: function (box) {
+                box.contents.push({
+                    name: ''
+                });
+            },
 
-    };
+            deleteBoxItem: function (box, boxItem) {
+                box.contents.$remove(boxItem);
+            },
 
-    // Reload boxes
-    document.querySelector('button.reload').addEventListener('click', loadBoxes);
+            save: function () {
+                inventoryData.save(this.boxes, function (responseJson) {
+                    alert('Boxes saved');
+                });
+            }
 
-    // Save boxes
-    document.querySelector('button.save').addEventListener('click', saveBoxes);
+        }
 
-    // Add new box
-    document.querySelector('button.new-box').addEventListener('click', function () {
-        addBox({
-            name: '',
-            contents: []
-        });
     });
 
-    // On initial load, load the boxes
-    loadBoxes();
-
-});
+})(window);
