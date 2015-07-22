@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.get('/boxes', function (request, response) {
 
     fs.readFile(dataFile, function (error, data) {
-        if (error) data = [];
+        if (error) data = {};
 
         response.json({
             status: true,
