@@ -37,15 +37,34 @@
                     name: '',
                     contents: []
                 });
+                Vue.nextTick(function () {
+                    document.querySelector('div.box:last-of-type input.box-name').focus();
+                });
             },
 
             deleteBox: function (box) {
                 this.boxes.$remove(box);
             },
 
-            createBoxItem: function (box) {
+            firstBoxItem: function (box, event) {
+                if (box.contents.length == 0) {
+                    box.contents.push({
+                        name: ''
+                    });
+                }
+                Vue.nextTick(function () {
+                    var boxElement = event.target.parentNode;
+                    boxElement.querySelector('div.box-item:last-of-type input').focus();
+                });
+            },
+
+            createBoxItem: function (box, event) {
                 box.contents.push({
                     name: ''
+                });
+                Vue.nextTick(function () {
+                    var boxElement = event.target.parentNode.parentNode;
+                    boxElement.querySelector('div.box-item:last-of-type input').focus();
                 });
             },
 
