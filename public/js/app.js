@@ -9,7 +9,8 @@
 
         // App state data
         data: {
-            boxes: []
+            boxes: [],
+            saveButtonText: 'Save Data'
         },
 
         // Ensure data persistence
@@ -73,8 +74,14 @@
             },
 
             save: function () {
+                var _this = this,
+                    originalText = this.saveButtonText;
+                this.saveButtonText = 'Saving..';
                 inventoryData.save(this.boxes, function (responseJson) {
-                    alert('Boxes saved');
+                    _this.saveButtonText = 'Saved!';
+                    setTimeout(function () {
+                        _this.saveButtonText = originalText;
+                    }, 750);
                 });
             }
 
